@@ -13,7 +13,8 @@ import {
   MANAGEMENT,
   NORMAN,
   SCHEMA,
-  DEFAULT_WORKSPACE
+  DEFAULT_WORKSPACE,
+  SECRET
 } from '@shell/config/types';
 import { _CREATE, _EDIT, _VIEW } from '@shell/config/query-params';
 
@@ -1199,7 +1200,19 @@ export default {
           },
         });
 
-        set(this.agentConfig, 'cloud-provider-config', res.data);
+        const secret = await this.$store.dispatch('rancher/create', {
+          type:     SECRET,
+          metadata: {
+            namespace: 'fleet-default',
+            name:      this.value.metadata.name
+          },
+        });
+
+        secret.setData('data', res.data);
+
+        await secret.save({ url: `/v1/secrets` });
+
+        set(this.agentConfig, 'cloud-provider-config', `secret://fleet-default:${ this.value.metadata.name }`);
         set(this.chartValues, `${ HARVESTER_CLOUD_PROVIDER }.clusterName`, this.value.metadata.name);
         set(this.chartValues, `${ HARVESTER_CLOUD_PROVIDER }.cloudConfigPath`, '/var/lib/rancher/rke2/etc/config-files/cloud-provider-config');
       }
