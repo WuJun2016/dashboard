@@ -1,4 +1,5 @@
 <script>
+import debounce from 'lodash/debounce';
 import { _VIEW } from '@shell/config/query-params';
 import { mapGetters } from 'vuex';
 import { get, isEmpty, clone } from '@shell/utils/object';
@@ -73,35 +74,33 @@ export default {
     }
   },
 
-  mounted() {
-    this.update();
+  created() {
+    this.queueUpdate = debounce(this.update, 500);
   },
 
   methods: {
     update() {
-      this.$nextTick(() => {
-        const out = {};
-        const requiredDuringSchedulingIgnoredDuringExecution = { nodeSelectorTerms: [] };
-        const preferredDuringSchedulingIgnoredDuringExecution = [] ;
+      const out = {};
+      const requiredDuringSchedulingIgnoredDuringExecution = { nodeSelectorTerms: [] };
+      const preferredDuringSchedulingIgnoredDuringExecution = [] ;
 
-        this.allSelectorTerms.forEach((term) => {
-          if (term.weight) {
-            const neu = { weight: 1, preference: term };
+      this.allSelectorTerms.forEach((term) => {
+        if (term.weight) {
+          const neu = { weight: 1, preference: term };
 
-            preferredDuringSchedulingIgnoredDuringExecution.push(neu);
-          } else {
-            requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.push(term);
-          }
-        });
-
-        if (preferredDuringSchedulingIgnoredDuringExecution.length) {
-          out.preferredDuringSchedulingIgnoredDuringExecution = preferredDuringSchedulingIgnoredDuringExecution;
+          preferredDuringSchedulingIgnoredDuringExecution.push(neu);
+        } else {
+          requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.push(term);
         }
-        if (requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.length) {
-          out.requiredDuringSchedulingIgnoredDuringExecution = requiredDuringSchedulingIgnoredDuringExecution;
-        }
-        this.$emit('input', out);
       });
+
+      if (preferredDuringSchedulingIgnoredDuringExecution.length) {
+        out.preferredDuringSchedulingIgnoredDuringExecution = preferredDuringSchedulingIgnoredDuringExecution;
+      }
+      if (requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.length) {
+        out.requiredDuringSchedulingIgnoredDuringExecution = requiredDuringSchedulingIgnoredDuringExecution;
+      }
+      this.$emit('input', out);
     },
 
     changePriority(term) {
@@ -126,9 +125,16 @@ export default {
 </script>
 
 <template>
-  <div class="row" @input="update">
+  <div class="row" @input="queueUpdate">
     <div class="col span-12">
-      <ArrayListGrouped v-model="allSelectorTerms" class="mt-20" :mode="mode" :default-add-value="{matchExpressions:[]}" :add-label="t('workload.scheduling.affinity.addNodeSelector')">
+      <ArrayListGrouped
+        v-model="allSelectorTerms"
+        class="mt-20"
+        :mode="mode"
+        :default-add-value="{matchExpressions:[]}"
+        :add-label="t('workload.scheduling.affinity.addNodeSelector')"
+        @remove="queueUpdate"
+      >
         <template #default="props">
           <div class="row">
             <div class="col span-6">

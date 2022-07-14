@@ -104,6 +104,7 @@ export default {
       return getUniqueLabelKeys(this.nodes);
     }
   },
+
   created() {
     this.queueUpdate = debounce(this.update, 500);
   },
@@ -190,6 +191,7 @@ export default {
         :default-add-value="{ matchExpressions: [] }"
         :mode="mode"
         :add-label="t('workload.scheduling.affinity.addNodeSelector')"
+        @remove="queueUpdate"
       >
         <template #default="props">
           <div class="row mt-20 mb-20">
