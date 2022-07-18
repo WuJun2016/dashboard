@@ -16,6 +16,11 @@ export default {
       default: () => []
     },
 
+    allSelectorTerms: {
+      type:     Array,
+      default: () => []
+    },
+
     // CRU mode
     mode: {
       type:    String,
@@ -150,6 +155,31 @@ export default {
           this.$emit('input', simplify(out));
         }
       });
+    }
+  },
+  watch: {
+    allSelectorTerms(neu, old) {
+      if (old.length > 0 && (neu.length < old.length)) {
+        let rules;
+
+        if ( isArray(this.value) ) {
+          rules = [...this.value];
+        } else {
+          rules = convert(this.value.matchLabels, this.value.matchExpressions);
+        }
+
+        rules = rules.map((rule) => {
+          const newRule = clone(rule);
+
+          if (newRule.values && typeof newRule.values !== 'string') {
+            newRule.values = newRule.values.join(', ');
+          }
+
+          return newRule;
+        });
+
+        this.$set(this, 'rules', rules);
+      }
     }
   }
 };

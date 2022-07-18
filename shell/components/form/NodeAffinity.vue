@@ -150,6 +150,7 @@ export default {
           <MatchExpressions
             v-model="props.row.value.matchExpressions"
             :mode="mode"
+            :all-selector-terms="allSelectorTerms"
             class="col span-12 mt-20"
             :type="node"
             :show-remove="false"
