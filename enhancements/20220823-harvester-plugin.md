@@ -34,11 +34,11 @@ Note: The current plan is that harvester v1.1.0 will also be integrated into the
 
 #### 2. Hope rancher dashboard can be integrated with harvester by way of plugin configuration
 rancher loads the above provided module as a plugin into the rancher ui.
-    **In order to ensure that users with different permissions can access the offline plug-in module, harvester will need to provide different users with the ability to access the resource through api (v1/public-assets). pending***
+    In order to ensure that users with different permissions can access the offline plug-in module, harvester will need to provide different users with the ability to access the resource through api (v1/public-assets). pending
 
 #### 3. Configure the access mode of each cluster separately
-1. **In order to enable each imported harvester cluster to individually set whether to use offline resources or online harvester-plugin modules, the harvester backend needs to expose the ui-source information inside the harvester setting in some other way. (because cluster members do not have access to the settings).**
-2. **In order to enable each imported harvester cluster to be configured with a separate version of the harvester plugin, and the current ui-index is provided for a single cluster to configure the full resource access address, so the harvester backend needs to add a configuration in the setting to save the address of the loading plugin, and allow any permission users to access.**
+1. In order to enable each imported harvester cluster to individually set whether to use offline resources or online harvester-plugin modules, the harvester backend needs to expose the ui-source information inside the harvester setting in some other way. (because cluster members do not have access to the settings).
+2. In order to enable each imported harvester cluster to be configured with a separate version of the harvester plugin, and the current ui-index is provided for a single cluster to configure the full resource access address, so the harvester backend needs to add a configuration in the setting to save the address of the loading plugin, and allow any permission users to access.
 
 Tip: At present, the plugin configuration page provided by rancher cannot meet the needs of configuring different plugin versions for different harvesters.
 
@@ -59,11 +59,7 @@ Tip: At present, the plugin configuration page provided by rancher cannot meet t
 
 ## Design
 
-
 ### Implementation Overview
-![](single.png)
-
-![](mul.png)
 
 
 ### Test plan
