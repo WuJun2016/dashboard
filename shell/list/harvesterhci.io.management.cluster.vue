@@ -118,7 +118,8 @@ export default {
         <template #col:name="{row}">
           <td>
             <span>
-              <n-link
+              <a v-if="row.isReady" class="link" @click="row.goToCluster()">{{ row.nameDisplay }}</a>
+              <!-- <n-link
                 v-if="row.isReady"
                 :to="{
                   name: `${VIRTUAL}-c-cluster`,
@@ -129,7 +130,7 @@ export default {
                 }"
               >
                 {{ row.nameDisplay }}
-              </n-link>
+              </n-link> -->
               <span v-else>
                 {{ row.nameDisplay }}
               </span>

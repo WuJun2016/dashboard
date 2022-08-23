@@ -48,9 +48,9 @@ export default function({
         element.onload = () => {
           element.parentElement.removeChild(element);
 
-          if (!window[id]) {
-            return reject(new Error('Could not load plugin code'));
-          }
+          // if (!window[id]) {
+          //   return reject(new Error('Could not load plugin code'));
+          // }
 
           // Update the timestamp that new plugins were loaded - may be needed
           // to update caches when new plugins are loaded
@@ -63,7 +63,7 @@ export default function({
           plugins[id] = plugin;
 
           // Initialize the plugin
-          window[id].default(plugin, this.internal());
+          // window[id].default(plugin, this.internal());
 
           // Uninstall existing plugin if there is one
           this.removePlugin(plugin.name);
