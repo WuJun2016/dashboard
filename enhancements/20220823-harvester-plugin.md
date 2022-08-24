@@ -39,11 +39,11 @@ Here's a known problem to solve:
   cluster member users do not have permission to access offline resources saved to the Harvester container.
   In order to ensure that users with different permissions can access the offline plugin module, harvester will need to provide different users with the ability to access the resource through api (`/v1/harvester/public-assets`). (harvester backend)
 
+
+![](plugin-assets.png)
 #### 3. In harvester multi-cluster, it is hoped that each imported harvester cluster can configure the version of the plugin and whether the access is an offline plugin or an online plugin.
 1. Because the harvester plugin is managed by each imported harvester cluster, we need to add `plugin-index` in the harveter setting to save the user configured plugin version. （harvester backend）
 2. cluster member does not have access to `ui-souce` and `plugin-index`.  The values here will be exposed to the frontend by the harvester cluster through other api's (`/v1/harvester/public-assets`) that do not have access control.  （harvester backend）
-
-![](plugin-assets.png)
 
 Tip: At present, the plugin configuration page provided by rancher cannot meet the needs of configuring different plugin versions for different harvesters.
 
