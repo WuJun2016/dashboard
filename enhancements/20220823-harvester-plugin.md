@@ -56,8 +56,9 @@ Tip: At present, the plugin configuration page provided by rancher cannot meet t
 2. multi-cluster:
     1. User import harvester cluster in rancher， 
         1. The imported harvester supports plugin, so when the user clicks on the harvester cluster, The frontend will decide to get the harvester plugin module from the address configured by `/v1/harvester/public-assets` or `plugin-index` according to the value of `ui-souce`.
-        2. The imported harvester cluster does not support plugins, we will load the harvester plugin resources embedded in the rancher.  
-           The harvester plugin built into rancher is provided by the harvester repo. In order to be compatible with the harvester v1.0.x version, the harvester ui team will package a harvester plugin that does not include the new features of v1.1.0
+        2. The imported harvester cluster does not support plugins, we will load the harvester plugin resources embedded in the rancher. 
+
+        Note: The harvester plugin built into rancher is provided by the harvester repo. In order to be compatible with the harvester v1.0.x version, the harvester ui team will package a harvester plugin that does not include the new features of v1.1.0
 
        
     2. The admin user can configure the `ui-source` and `plugin-index` in the settings page of the imported harvester cluster
