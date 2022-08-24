@@ -43,7 +43,9 @@ Here's a known problem to solve:
 ![](plugin-assets.png)
 #### 3. In harvester multi-cluster, it is hoped that each imported harvester cluster can configure the version of the plugin and whether the access is an offline plugin or an online plugin.
 1. Because the harvester plugin is managed by each imported harvester cluster, we need to add `plugin-index` in the harveter setting to save the user configured plugin version. （harvester backend）
-2. cluster member does not have access to `ui-souce` and `plugin-index`.  The values here will be exposed to the frontend by the harvester cluster through other api's (`/v1/harvester/public-assets`) that do not have access control.  （harvester backend）
+2. cluster member does not have access to `ui-souce` and `plugin-index`.  The values here will be exposed to the frontend by the harvester cluster through other api's (`/v1/harvester/uiinfo`) that do not have access control.  （harvester backend）
+
+![](uiinfo.png)
 
 Tip: At present, the plugin configuration page provided by rancher cannot meet the needs of configuring different plugin versions for different harvesters.
 
@@ -57,7 +59,6 @@ Tip: At present, the plugin configuration page provided by rancher cannot meet t
         2. The imported harvester does not support plugin, it loads the built-in harvester plugin resource packaged inside the rancher (the resource is offline).  
            The harvester plugin built into rancher is provided by the harvester repo. In order to be compatible with the harvester v1.0.x version, the harvester ui team will package a harvester plugin that does not include the new features of v1.1.0
 
-    ![](uiinfo.png)
        
     2. The admin user can configure the `ui-source` and `plugin-index` in the settings page of the imported harvester cluster
 
