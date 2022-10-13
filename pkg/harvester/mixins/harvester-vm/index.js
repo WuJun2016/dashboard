@@ -93,6 +93,8 @@ export default {
       secrets:            this.$store.dispatch('harvester/findAll', { type: SECRET }),
     };
 
+    this.hasPCISchema = this.$store.getters['harvester/schemaFor'](HCI.PCI_DEVICE);
+
     if (this.$store.getters['harvester/schemaFor'](NODE)) {
       hash.nodes = this.$store.dispatch('harvester/findAll', { type: NODE });
     }
@@ -131,6 +133,7 @@ export default {
       userDataTemplateId:         '',
       saveUserDataAsClearText:    false,
       saveNetworkDataAsClearText: false,
+      hasPCISchema:               false,
       immutableMode:              this.realMode === _CREATE ? _CREATE : _VIEW,
     };
   },

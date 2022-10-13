@@ -907,6 +907,7 @@ harvester:
   addons:
     descriptions:
       'vm-import-controller': vm-import-controller is an addon to help migrate VM workloads from other source clusters to an existing Harvester cluster.
+      'pcidevices-controller': '1111'
     vmImport:
       titles:
         basic: Basic
