@@ -532,7 +532,7 @@ export default {
     >
       <div>
         <label>
-          {{ t('harvester.dashboard.version') }}:
+          {{ t('harvester.dashboard.version') }}: test
         </label>
         <span>
           <span v-tooltip="{content: currentVersion}">
