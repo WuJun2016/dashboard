@@ -18,6 +18,6 @@ export default {
 
 <template>
   <div>
-    This is harvester Dashboard.
+    This is harvester Dashboard.1
   </div>
 </template>
