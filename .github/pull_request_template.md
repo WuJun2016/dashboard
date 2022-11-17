@@ -1,5 +1,17 @@
 <!-- This template is for Devs to give QA details before moving the issue To-Test -->
 ### Summary
+#### Pre Create PR Checklist
+You need to check the following checklist before creating this pr
+- Whether to check RBAC related functions
+    - [ ] Yes
+    - [ ] No
+- Whether it is related to RKE1
+    - [ ] Yes 
+    - [ ] No
+- Check with the back-end developer to see if the feature is complete.
+    - [ ] Yes
+    - [ ] No, This is a standalone UI fix
+
 Fixes #
 <!-- Define findings related to the feature or bug issue. -->
 
