@@ -46,13 +46,14 @@ module.exports = function(dir) {
 
     configureWebpack: (config) => {
       // Alias updates
-      config.resolve.alias['@shell'] = path.join(dir, '.shell');
-      config.resolve.alias['~shell'] = path.join(dir, '.shell');
+      config.resolve.alias['@shell'] = path.join(maindir, 'shell');
+      config.resolve.alias['~shell'] = path.join(maindir, 'shell');
       // This should be udpated once we move to rancher-components as a dependency
       config.resolve.alias['@components'] = COMPONENTS_DIR;
       config.resolve.alias['./node_modules'] = path.join(maindir, 'node_modules');
       config.resolve.alias['@pkg'] = dir;
       config.resolve.alias['~pkg'] = dir;
+      config.resolve.alias['@/pkg'] = path.join(dir, '../');
       delete config.resolve.alias['@'];
 
       // Prevent the dynamic importer and the model-loader-require from importing anything dynamically - we don't want all of the
