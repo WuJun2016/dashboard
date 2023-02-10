@@ -256,4 +256,8 @@ export default class Namespace extends SteveModel {
       this.metadata.labels[PROJECT] = project;
     }
   }
+
+  get hideDetailLocation() {
+    return !!this.$rootGetters['currentProduct'].hideNamespaceLocation;
+  }
 }
