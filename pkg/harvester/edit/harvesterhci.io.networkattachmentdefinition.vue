@@ -190,6 +190,7 @@ export default {
           :mode="mode"
           :label="t('harvester.fields.type')"
           required
+          :disabled="!isCreate"
         />
 
         <LabeledInput

@@ -2,8 +2,9 @@
 import { Banner } from '@components/Banner';
 import Loading from '@shell/components/Loading';
 import ResourceTable from '@shell/components/ResourceTable';
+import BadgeState from '@shell/components/formatter/BadgeStateFormatter';
 
-import { NAME, AGE, NAMESPACE } from '@shell/config/table-headers';
+import { NAME, AGE, NAMESPACE, STATE } from '@shell/config/table-headers';
 import { NETWORK_ATTACHMENT, SCHEMA } from '@shell/config/types';
 import { HCI as HCI_ANNOTATIONS } from '../config/labels-annotations';
 import { HCI } from '../types';
@@ -23,7 +24,10 @@ const schema = {
 export default {
   name:       'HarvesterListNetworks',
   components: {
-    ResourceTable, Banner, Loading
+    ResourceTable, 
+    Banner, 
+    Loading,
+    BadgeState,
   },
 
   async fetch() {
@@ -54,6 +58,7 @@ export default {
   computed: {
     headers() {
       return [
+        STATE,
         NAME,
         NAMESPACE,
         {
@@ -134,6 +139,27 @@ export default {
       :rows="filterRows"
       key-field="_key"
       v-on="$listeners"
-    />
+    >
+      <template #cell:state="{row}">
+        <BadgeState
+          :row="row" 
+        />
+        <v-popover
+          v-if="row.clusterNetworkErrorMessage"
+          trigger="hover"
+          offset="16"
+        >
+          <span class="tooltip-target">
+            <i class="icon icon-warning icon-lg text-warning" />
+          </span>
+
+          <template slot="popover">
+            <p>
+              {{ row.clusterNetworkErrorMessage }}
+            </p>
+          </template>
+        </v-popover>
+      </template>
+    </ResourceTable>
   </div>
 </template>

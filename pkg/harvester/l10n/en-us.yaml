@@ -894,6 +894,8 @@ harvester:
   vlanConfig:
     title: Network Configs
     createNetworkConfig: Create Network Config
+    action:
+      migrate: Migrate
     titles:
       nodeSelector: Node Selector
       uplink: Uplink
@@ -952,6 +954,11 @@ harvester:
   
   secret:
     label: Secrets
+
+  harvesterVlanConfigMigrateDialog:
+    targetClusterNetwork: 
+      label: Target Cluster Network
+      placeholder: Choose Target Cluster Network 
 
 advancedSettings:
   descriptions:
