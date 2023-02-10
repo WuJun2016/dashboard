@@ -34,6 +34,7 @@ export default {
           out.push(entry);
         }
       }
+      console.log('----table out', out, this.pagedRows);
 
       return out;
     }
