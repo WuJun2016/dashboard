@@ -112,11 +112,17 @@ export default {
       // Sometimes, different pages may have different namespaces to filter
       const notFilterNamespaces = this.$store.getters[`type-map/optionsFor`](resource).notFilterNamespace || [];
 
+      const params = { ...this.$route.params };
+      const resource = params.resource;
+      // Sometimes, different pages may have different namespaces to filter
+      const notFilterNamespaces = this.$store.getters[`type-map/optionsFor`](resource).notFilterNamespace || [];
+
       // TODO: Add return info
       if (this.currentProduct?.customNamespaceFilter && this.currentProduct?.inStore) {
         // Sometimes the component can show before the 'currentProduct' has caught up, so access the product via the getter rather
         // than caching it in the `fetch`
 
+        // The namespace display on the list and edit pages should be the same as in the namespaceFilter component
         if (this.$store.getters[`${ this.currentProduct.inStore }/filterNamespace`]) {
           const allNamespaces = this.$store.getters[`${ this.currentProduct.inStore }/filterNamespace`](notFilterNamespaces);
 
