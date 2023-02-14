@@ -17,6 +17,7 @@ import { escapeHtml } from '@shell/utils/string';
 
 // eslint-disable-next-line
 import webworker from './web-worker.steve-sub-worker.js';
+import { BLANK_CLUSTER } from '@shell/store/index.js';
 
 export const NO_WATCH = 'NO_WATCH';
 export const NO_SCHEMA = 'NO_SCHEMA';
@@ -47,7 +48,8 @@ export function createWorker(store, ctx) {
   };
 
   if (!store.$workers[storeName]) {
-    const worker = new webworker();
+    const workerMode = advancedWorker ? 'advanced' : 'basic';
+    const worker = store.steveCreateWorker(workerMode);
 
     store.$workers[storeName] = worker;
 
