@@ -154,7 +154,7 @@ export default {
       const args = {
         type,
         revision:  '',
-        namespace: opt.watchNamespace
+        namespace: opt.watchNamespace || opt.namespaced
       };
 
       // if we are coming from a resource that wasn't watched
@@ -314,11 +314,13 @@ export default {
       }
     }
 
+    // ToDo: SM if we start a "bigger" watch (such as watch without a namespace vs a watch with a namespace), we should stop the stop the "smaller" watch so we don't have duplicate events coming back
     if ( opt.watch !== false ) {
       dispatch('watch', {
         type,
         revision:  out.revision,
-        namespace: opt.watchNamespace,
+        namespace: opt.watchNamespace || opt.namespaced, // it could be either apparently
+        // ToDo: SM namespaced is sometimes a boolean and sometimes a string, I don't see it as especially broken but we should refactor that in the future
         force:     opt.forceWatch === true,
       });
     }
@@ -534,21 +536,10 @@ export default {
 
   // Forget a type in the store
   // Remove all entries for that type and stop watching it
-  forgetType({ commit, getters, dispatch }, type) {
-    const obj = {
-      type,
-      stop: true, // Stops the watch on a type
-    };
-
-    if (getters['schemaFor'](type) && getters['watchStarted'](obj)) {
-      // Set that we don't want to watch this type
-      // Otherwise, the dispatch to unwatch below will just cause a re-watch when we
-      // detect the stop message from the backend over the web socket
-      commit('setWatchStopped', obj);
-      dispatch('watch', obj); // Ask the backend to stop watching the type
-      // Make sure anything in the pending queue for the type is removed, since we've now removed the type
-      commit('clearFromQueue', type);
-    }
+  forgetType({ commit, dispatch, state }, type) {
+    state.started
+      .filter(entry => entry.type === type)
+      .forEach(entry => dispatch('unwatch', entry));
 
     commit('forgetType', type);
   },
