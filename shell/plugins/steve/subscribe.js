@@ -580,7 +580,9 @@ export const actions = {
    * - We have requested that the resource watch should be stopped and we receive this event as confirmation
    * - Steve tells us that the resource is no longer watched
    */
-  'ws.resource.stop'({ getters, commit, dispatch }, msg) {
+  'ws.resource.stop'({
+    state, getters, commit, dispatch
+  }, msg) {
     const type = msg.resourceType;
     const obj = {
       type,
@@ -589,7 +591,7 @@ export const actions = {
       selector:  msg.selector
     };
 
-    // console.warn(`Resource stop: [${ getters.storeName }]`, msg); // eslint-disable-line no-console
+    state.debugSocket && console.info(`Resource Stop [${ getters.storeName }]`, type, msg); // eslint-disable-line no-console
 
     // If we're trying to watch this event, attempt to re-watch
     if ( getters['schemaFor'](type) && getters['watchStarted'](obj) ) {
@@ -636,6 +638,7 @@ export const actions = {
   },
 
   'ws.resource.create'(ctx, msg) {
+    ctx.state.debugSocket && console.info(`Resource Create [${ ctx.getters.storeName }]`, msg.resourceType, msg); // eslint-disable-line no-console
     queueChange(ctx, msg, true, 'Create');
   },
 
@@ -685,6 +688,8 @@ export const actions = {
   'ws.resource.remove'(ctx, msg) {
     const data = msg.data;
     const type = data.type;
+
+    ctx.state.debugSocket && console.info(`Resource Remove [${ ctx.getters.storeName }]`, type, msg); // eslint-disable-line no-console
 
     if (type === SCHEMA) {
       const worker = (this.$workers || {})[ctx.getters.storeName];
