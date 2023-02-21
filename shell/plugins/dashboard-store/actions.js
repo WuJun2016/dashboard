@@ -318,7 +318,8 @@ export default {
       dispatch('watch', {
         type,
         revision:  out.revision,
-        namespace: opt.watchNamespace
+        namespace: opt.watchNamespace,
+        force:     opt.forceWatch === true,
       });
     }
 
@@ -381,7 +382,8 @@ export default {
       dispatch('watch', {
         type,
         selector,
-        revision: res.revision
+        revision: res.revision,
+        force:    opt.forceWatch === true,
       });
     }
 
