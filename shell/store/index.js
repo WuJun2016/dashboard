@@ -582,7 +582,6 @@ export const mutations = {
     }
 
     state.workspace = value;
-
     getActiveNamespaces(state, getters);
   },
 
