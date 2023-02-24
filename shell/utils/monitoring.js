@@ -26,9 +26,10 @@ export function haveV2Monitoring(getters, storeName = 'cluster') {
   if (haveV1Monitoring(getters)) {
     return false;
   }
+  const inStore = getters['getStoreNameByProductId'];
 
   // Just check for the pod monitors CRD
-  const schemas = getters[`${ storeName }/all`](SCHEMA);
+  const schemas = getters[`${ inStore }/all`](SCHEMA);
   const exists = findBy(schemas, 'id', normalizeType(MONITORING.PODMONITOR));
 
   return !!exists;
