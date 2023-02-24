@@ -55,8 +55,9 @@ export async function loadSchemas(ctx, watch = true) {
 
   commit('loadAll', {
     ctx,
-    type: SCHEMA,
-    data: res.data
+    type:     SCHEMA,
+    data:     res.data,
+    revision: res.revision
   });
 
   if ( watch !== false ) {
@@ -311,6 +312,7 @@ export default {
           ctx,
           type,
           data:      out.data,
+          revision:  out.revision,
           skipHaveAll,
           namespace: opt.namespaced,
         });
@@ -379,8 +381,9 @@ export default {
     commit('loadSelector', {
       ctx,
       type,
-      entries: res.data,
-      selector
+      entries:  res.data,
+      selector,
+      revision: res.revision,
     });
 
     if ( opt.watch !== false ) {
