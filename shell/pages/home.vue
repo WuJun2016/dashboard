@@ -8,7 +8,7 @@ import { BadgeState } from '@components/BadgeState';
 import CommunityLinks from '@shell/components/CommunityLinks';
 import SingleClusterInfo from '@shell/components/SingleClusterInfo';
 import { mapGetters, mapState } from 'vuex';
-import { MANAGEMENT, CAPI } from '@shell/config/types';
+import { MANAGEMENT, CAPI, HCI } from '@shell/config/types';
 import { NAME as MANAGER } from '@shell/config/product/manager';
 import { STATE } from '@shell/config/table-headers';
 import { MODE, _IMPORT } from '@shell/config/query-params';
@@ -18,7 +18,7 @@ import PageHeaderActions from '@shell/mixins/page-actions';
 import { getVendor } from '@shell/config/private-label';
 import { mapFeature, MULTI_CLUSTER } from '@shell/store/features';
 import { BLANK_CLUSTER } from '@shell/store';
-import { filterOnlyKubernetesClusters, filterHiddenLocalCluster } from '@shell/utils/cluster';
+import { filterHiddenLocalCluster } from '@shell/utils/cluster';
 
 import { RESET_CARDS_ACTION, SET_LOGIN_ACTION } from '@shell/config/page-actions';
 
@@ -70,8 +70,14 @@ export default {
       },
     ];
 
+    let vendor = getVendor();
+
+    if (vendor === 'Harvester') {
+      vendor = 'Rancher';
+    }
+
     return {
-      HIDE_HOME_PAGE_CARDS, fullVersion, pageActions, vendor: getVendor(),
+      HIDE_HOME_PAGE_CARDS, fullVersion, pageActions, vendor,
     };
   },
 
@@ -187,17 +193,17 @@ export default {
           formatter:    'PodsUsage',
           delayLoading: true
         },
-        // {
-        //   name:  'explorer',
-        //   label:  this.t('landing.clusters.explorer')
-        // }
+        {
+          name:  'virtualizationManagement',
+          label: ' ',
+        }
       ];
     },
 
     ...mapGetters(['currentCluster', 'defaultClusterId']),
 
     kubeClusters() {
-      return filterHiddenLocalCluster(filterOnlyKubernetesClusters(this.provClusters || []), this.$store);
+      return filterHiddenLocalCluster(this.provClusters || [], this.$store);
     }
   },
 
@@ -280,6 +286,19 @@ export default {
       if (retry === 0 && res?.type === 'error' && res?.status === 500) {
         await this.closeSetLoginBanner(retry + 1);
       }
+    },
+
+    goToHarvesterCluster(row) {
+      const VIRTUAL = 'harvester';
+
+      this.$router.push({
+        name:   `${ VIRTUAL }-c-cluster-resource`,
+        params: {
+          cluster:  row.status.clusterName,
+          product:  VIRTUAL,
+          resource: HCI.DASHBOARD
+        }
+      });
     }
   }
 };
@@ -404,6 +423,7 @@ export default {
                         </n-link>
                         <span v-else>{{ row.nameDisplay }}</span>
                       </span>
+
                       <i
                         v-if="row.unavailableMachines"
                         v-tooltip="row.unavailableMachines"
@@ -428,11 +448,30 @@ export default {
                     &mdash;
                   </td>
                 </template>
+                <template #cell:virtualizationManagement="{row}">
+                  <a
+                    v-if="row.isHarvester && row.mgmt && row.mgmt.isReady && !row.hasError"
+                    class="btn btn-sm role-secondary"
+                    @click="goToHarvesterCluster(row)"
+                  >
+                    <div>
+                      Harvester
+                    </div>
+                  </a>
+                </template>
                 <!-- <template #cell:explorer="{row}">
-                  <n-link v-if="row && row.isReady" class="btn btn-sm role-primary" :to="{name: 'c-cluster', params: {cluster: row.id}}">
+                  <n-link
+                    v-if="row && row.isReady"
+                    class="btn btn-sm role-primary"
+                    :to="{name: 'c-cluster', params: {cluster: row.id}}"
+                  >
                     {{ t('landing.clusters.explore') }}
                   </n-link>
-                  <button v-else :disabled="true" class="btn btn-sm role-primary">
+                  <button
+                    v-else
+                    :disabled="true"
+                    class="btn btn-sm role-primary"
+                  >
                     {{ t('landing.clusters.explore') }}
                   </button>
                 </template> -->
@@ -516,6 +555,10 @@ export default {
     .conditions-alert-icon {
       color: var(--error);
       margin-left: 4px;
+    }
+
+    .cluster-icon {
+      cursor: pointer;
     }
   }
 

@@ -73,7 +73,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['currentCluster']),
+    ...mapGetters(['currentCluster', 'disableHarvesterRelatedOperation']),
     ...mapGetters({ allCharts: 'catalog/charts', loadingErrors: 'catalog/errors' }),
     ...mapGetters({ t: 'i18n/t' }),
 
@@ -206,6 +206,12 @@ export default {
 
     install(chart) {
       chart.goToInstall(FROM_TOOLS);
+    },
+
+    disableHarvesterRelatedTools(chart) {
+      const harvesterRelatedTools = ['cluster/rancher-charts/longhorn', 'cluster/rancher-charts/rancher-logging', 'cluster/rancher-charts/rancher-monitoring'];
+
+      return this.disableHarvesterRelatedOperation && harvesterRelatedTools.includes(chart.id);
     },
 
     openV1Tool(id) {
@@ -480,7 +486,10 @@ export default {
             :link-to="opt.app.detailLocation"
           />
         </div>
-        <div class="action">
+        <div
+          v-if="!disableHarvesterRelatedTools(opt.chart)"
+          class="action"
+        >
           <template v-if="opt.blocked">
             <button
               v-clean-html="t('catalog.tools.action.install')"

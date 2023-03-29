@@ -1520,6 +1520,7 @@ export const mutations = {
 
   ignoreGroup(state, match) {
     match = ensureRegex(match);
+    console.log('-----match', match);
     // State shouldn't contain actual RegExp objects, because they don't serialize
     state.groupIgnore.push(regexToString(match));
   },

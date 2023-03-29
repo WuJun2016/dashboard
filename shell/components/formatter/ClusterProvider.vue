@@ -7,6 +7,8 @@ export default {
     },
   },
   data(props) {
+    console.log('-----isImported', this.row, this.row.machineProviderDisplay);
+
     return {
       // The isImported getter on the provisioning cluster
       // model doesn't work for imported K3s clusters, in

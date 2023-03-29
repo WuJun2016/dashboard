@@ -1,6 +1,6 @@
 import Steve from '@shell/plugins/steve';
 import {
-  COUNT, NAMESPACE, NORMAN, MANAGEMENT, FLEET, UI, VIRTUAL_HARVESTER_PROVIDER, DEFAULT_WORKSPACE
+  COUNT, NAMESPACE, NORMAN, MANAGEMENT, FLEET, UI, VIRTUAL_HARVESTER_PROVIDER, DEFAULT_WORKSPACE, HCI
 } from '@shell/config/types';
 import { CLUSTER as CLUSTER_PREF, NAMESPACE_FILTERS, LAST_NAMESPACE, WORKSPACE } from '@shell/store/prefs';
 import { allHash, allHashSettled } from '@shell/utils/promise';
@@ -218,25 +218,27 @@ const updateActiveNamespaceCache = (state, activeNamespaceCache) => {
 
 export const state = () => {
   return {
-    managementReady:         false,
-    clusterReady:            false,
-    isMultiCluster:          false,
-    isRancher:               false,
-    namespaceFilters:        [],
-    activeNamespaceCache:    {}, // Used to efficiently check if a resource should be displayed
-    activeNamespaceCacheKey: '', // Fingerprint of activeNamespaceCache
-    allNamespaces:           [],
-    allWorkspaces:           [],
-    clusterId:               null,
-    productId:               null,
-    workspace:               null,
-    error:                   null,
-    cameFromError:           false,
-    pageActions:             [],
-    serverVersion:           null,
-    systemNamespaces:        [],
-    isSingleProduct:         undefined,
-    namespaceFilterMode:     null,
+    managementReady:           false,
+    clusterReady:              false,
+    isMultiCluster:            false,
+    isRancher:                 false,
+    namespaceFilters:          [],
+    activeNamespaceCache:      {}, // Used to efficiently check if a resource should be displayed
+    activeNamespaceCacheKey:   '', // Fingerprint of activeNamespaceCache
+    allNamespaces:             [],
+    allWorkspaces:             [],
+    clusterId:                 null,
+    productId:                 null,
+    workspace:                 null,
+    error:                     null,
+    cameFromError:             false,
+    pageActions:               [],
+    serverVersion:             null,
+    systemNamespaces:          [],
+    isSingleProduct:           undefined,
+    namespaceFilterMode:       null,
+    supportRancherManage:      true,
+    openRancherManagerSupport: false,
   };
 };
 
@@ -576,6 +578,18 @@ export const getters = {
     return false;
   },
 
+  openRancherManagerSupport(state) {
+    return state.openRancherManagerSupport;
+  },
+
+  disableHarvesterRelatedOperation(state, getters) {
+    // On the Explore Local Cluster page, it is necessary to disable certain operations that may affect the functionality of Harvester.
+    const isLocalCluster = getters['currentCluster']?.id === 'local';
+    const isExplorer = getters['isExplorer'];
+
+    return state.openRancherManagerSupport && isExplorer && isLocalCluster;
+  },
+
   isVirtualCluster(state, getters) {
     const cluster = getters['currentCluster'];
 
@@ -594,6 +608,10 @@ export const mutations = {
 
   clusterReady(state, ready) {
     state.clusterReady = ready;
+  },
+
+  openRancherManagerSupport(state, neu) {
+    state.openRancherManagerSupport = neu;
   },
 
   updateNamespaces(state, { filters, all }) {
@@ -749,6 +767,16 @@ export const actions = {
       isMultiCluster = false;
     }
 
+    const localCluster = res.clusters?.find(c => c.id === 'local');
+
+    if (localCluster?.isHarvester) {
+      const harvesterSetrting = await dispatch('cluster/findAll', { type: HCI.SETTING, opt: { url: `/v1/harvester/${ HCI.SETTING }s` } });
+      const rancherManagerSupport = harvesterSetrting.find(setting => setting.id === 'rancher-manager-support');
+      const openRancherManagerSupport = (rancherManagerSupport?.value || rancherManagerSupport?.default) === 'true';
+
+      commit('openRancherManagerSupport', openRancherManagerSupport);
+    }
+
     const pl = res.settings?.find(x => x.id === 'ui-pl')?.value;
     const brand = res.settings?.find(x => x.id === SETTING.BRAND)?.value;
     const systemNamespaces = res.settings?.find(x => x.id === SETTING.SYSTEM_NAMESPACES);
@@ -787,7 +815,7 @@ export const actions = {
   async loadCluster({
     state, commit, dispatch, getters
   }, {
-    id, product, oldProduct, oldPkg, newPkg
+    id, product, oldProduct, oldPkg, newPkg, equalUrl
   }) {
     const sameCluster = state.clusterId && state.clusterId === id;
     const samePackage = oldPkg?.name === newPkg?.name;
@@ -796,6 +824,7 @@ export const actions = {
     // Are we in the same cluster and package?
     if ( sameCluster && samePackage) {
       // Do nothing, we're already connected/connecting to this cluster
+
       return;
     }
 
@@ -843,7 +872,6 @@ export const actions = {
       // Remember the current cluster
       dispatch('prefs/set', { key: CLUSTER_PREF, value: id });
       commit('clusterId', id);
-
       // Use a pseudo cluster ID to pretend we have a cluster... to ensure some screens that don't care about a cluster but 'require' one to show
       if (id === BLANK_CLUSTER) {
         commit('clusterReady', true);
@@ -856,7 +884,6 @@ export const actions = {
     }
 
     console.log(`Loading ${ isMultiCluster ? 'ECM ' : '' }cluster...`); // eslint-disable-line no-console
-
     // If we've entered a new store ensure everything has loaded correctly
     if (newPkgClusterStore) {
       // Mirror actions on the 'cluster' store for our specific pkg `cluster` store
@@ -868,7 +895,6 @@ export const actions = {
       // Everything below here is rancher/kube cluster specific
       return;
     }
-
     // Execute Rancher cluster specific code
 
     // This is a workaround for a timing issue where the mgmt cluster schema may not be available

@@ -6,6 +6,7 @@ import { sortBy } from '@shell/utils/sort';
 import { ucFirst } from '@shell/utils/string';
 import { compare } from '@shell/utils/version';
 import { AS, MODE, _VIEW, _YAML } from '@shell/config/query-params';
+import { HARVESTER_NAME as HARVESTER } from '@shell/config/features';
 
 /**
  * Class representing Cluster resource.
@@ -346,6 +347,10 @@ export default class ProvCluster extends SteveModel {
     return this.$rootGetters['i18n/withFallback'](`cluster.provider."${ provisioner }"`, null, ucFirst(provisioner));
   }
 
+  get providerLogo() {
+    return this.mgmt?.providerLogo;
+  }
+
   get kubernetesVersion() {
     const unknown = this.$rootGetters['i18n/t']('generic.unknown');
 
@@ -362,13 +367,19 @@ export default class ProvCluster extends SteveModel {
   }
 
   get machineProvider() {
-    if ( this.isImported ) {
+    if (this.isHarvester) {
+      return HARVESTER;
+    } else if ( this.isImported ) {
       return null;
     } else if ( this.isRke2 ) {
       const kind = this.spec?.rkeConfig?.machinePools?.[0]?.machineConfigRef?.kind?.toLowerCase();
 
       if ( kind ) {
         return kind.replace(/config$/i, '').toLowerCase();
+      }
+
+      if (this.isHarvester) {
+        return 'Harvester';
       }
 
       return null;
@@ -380,6 +391,10 @@ export default class ProvCluster extends SteveModel {
   }
 
   get machineProviderDisplay() {
+    if (this.isHarvester) {
+      return HARVESTER;
+    }
+
     if ( this.isImported ) {
       return null;
     }
@@ -655,15 +670,6 @@ export default class ProvCluster extends SteveModel {
   }
 
   get stateObj() {
-    if ( this.isHarvester) {
-      return {
-        error:         true,
-        message:       this.$rootGetters['i18n/t']('cluster.harvester.warning.label'),
-        name:          this.$rootGetters['i18n/t']('cluster.harvester.warning.state'),
-        transitioning: false
-      };
-    }
-
     return this._stateObj;
   }
 
