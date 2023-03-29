@@ -4,6 +4,8 @@ import { HCI } from '../../../types';
 
 export default {
   middleware({ redirect, route }) {
+    console.log('------harvester middleware');
+
     return redirect({
       name:   `${ PRODUCT_NAME }-c-cluster-resource`,
       params: {
